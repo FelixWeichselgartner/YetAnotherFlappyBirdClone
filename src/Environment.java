@@ -1,6 +1,6 @@
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-
+/*
 
 public class Environment {
     private int gravity;
@@ -66,9 +66,9 @@ public class Environment {
             //System.out.println("running-");
             //check if a key is pressed
 
-            //IsKeyPressed.IsPressed();
+
             System.out.println("currentKey = " + Window.getCurrentKey());
-            //if (IsKeyPressed.isWPressed()) {
+
             if (Window.getCurrentKey() == ' ') {
                 System.out.println("jumping up");
                 newBird.jump();
@@ -86,3 +86,4 @@ public class Environment {
         return true;
     }
 }
+*/

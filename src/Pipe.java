@@ -26,16 +26,16 @@ public class Pipe {
 
     public void generatePipe(int a) {
         if (a == 1) {
-            currentX = Environment.getWindowX() - width;
+            currentX = FlappyBird.WIDTH - width;
         } else if (a == 2) {
-            currentX = Environment.getWindowX()/3*2 - width;
+            currentX = FlappyBird.WIDTH/3*2 - width;
         } else if (a == 3) {
-            currentX = Environment.getWindowX()/3 - width;
+            currentX = FlappyBird.WIDTH/3 - width;
         }
         int min = space;
-        int max = Environment.getWindowY() - 2*min - space;
+        int max = FlappyBird.HEIGHT - 2*min - space;
         Random randomNumber = new Random();
         heightDown = min + randomNumber.nextInt(max);
-        heightUp = Environment.getWindowY() - heightDown - space;
+        heightUp = FlappyBird.HEIGHT - heightDown - space;
     }
 }
