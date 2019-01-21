@@ -13,8 +13,9 @@ public class Bird {
 
     public void setX(int newX) {x = newX;}
     public void setY(int newY) {y = newY;}
+    public void setSpeed(int speed) {this.speed = speed;}
 
-    public void jump() {y = y + 100;}
+    public void jump() {y = y - 33;}
 
     public static int getThickness() {return thickness;}
     public int getSpeed() {return speed;}

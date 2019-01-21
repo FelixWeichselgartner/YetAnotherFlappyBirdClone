@@ -25,12 +25,14 @@ public class Pipe {
     }
 
     public void generatePipe(int a) {
-        if (a == 1) {
-            currentX = FlappyBird.WIDTH - width;
-        } else if (a == 2) {
-            currentX = FlappyBird.WIDTH/3*2 - width;
-        } else if (a == 3) {
-            currentX = FlappyBird.WIDTH/3 - width;
+        int full = FlappyBird.WIDTH;
+        int b = full/3 - 2*width/3;
+        if (a == 2) {
+            currentX = 3*b + 2*width;
+        } else if (a == 1) {
+            currentX = 2*b + width;
+        } else if (a == 0) {
+            currentX = b;
         }
         int min = space;
         int max = FlappyBird.HEIGHT - 2*min - space;
