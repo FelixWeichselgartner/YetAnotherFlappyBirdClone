@@ -1,3 +1,7 @@
+/**
+ * Bird class
+ * keeps track of speed and position and thickness
+ */
 public class Bird {
     private int x, y, speed;
     private static int thickness = 20;

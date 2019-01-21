@@ -1,3 +1,7 @@
+/**
+ * Player class
+ * keeps track of score and name
+ */
 public class Player {
     private int score;
     private String name = "player1";

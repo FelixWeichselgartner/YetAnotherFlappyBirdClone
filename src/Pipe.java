@@ -1,5 +1,9 @@
 import java.util.Random;
 
+/**
+ * Pipe class
+ * saves a pipes height and x value
+ */
 public class Pipe {
     private int heightUp, heightDown;
     private int currentX;
@@ -20,10 +24,18 @@ public class Pipe {
     public void setHeightDown(int newHD) {heightDown = newHD;}
     public void setCurrentX(int newX) {currentX = newX;}
 
+    /**
+     * prints all the pipe informations to console
+     */
     public void printPipeToConsole() {
         System.out.println("x = " + currentX + "\n" + "heightUp = " + heightUp + "\n" + "heightDown = " + heightDown);
     }
 
+    /**
+     * generates a pipe
+     * distance between 2 pipes is always the same size
+     * @param a     differs the different pipes to create -> for initialisation
+     */
     public void generatePipe(int a) {
         int full = FlappyBird.WIDTH;
         int b = full/3 - 2*width/3;

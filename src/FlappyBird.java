@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * Main Class
+ */
 public class FlappyBird extends JPanel {
     public static int WIDTH = 500, HEIGHT = 800;
     private Player newPlayer = new Player();
@@ -16,15 +19,12 @@ public class FlappyBird extends JPanel {
         currentKey = (char) 0;
     }
 
+    /**
+     * paints the pipes, bird and the score
+     * @param g
+     */
     public void paint(Graphics g) {
-        //Graphics2D g2 = (Graphics2D) g;
-        //g2.setColor(Color.BLUE);
-        //g2.fillRect(0, 0, WIDTH, HEIGHT);
-
         Graphics2D g2 = (Graphics2D) g;
-        g.setColor(Color.BLACK);
-        g.fillOval(newBird.getX(), newBird.getY(), Bird.getThickness(), Bird.getThickness());
-        g.drawString("Score: " + newPlayer.getScore(), 10,30);
         g2.setColor(Color.GREEN);
         g2.fillRect(allPipes[0].getCurrentX(), 0, allPipes[0].getWidth(), allPipes[0].getHeightDown());
         g2.fillRect(allPipes[0].getCurrentX(), HEIGHT-allPipes[0].getHeightUp(), allPipes[0].getWidth(), allPipes[0].getHeightUp());
@@ -32,13 +32,23 @@ public class FlappyBird extends JPanel {
         g2.fillRect(allPipes[1].getCurrentX(), HEIGHT-allPipes[1].getHeightUp(), allPipes[1].getWidth(), allPipes[1].getHeightUp());
         g2.fillRect(allPipes[2].getCurrentX(), 0, allPipes[2].getWidth(), allPipes[2].getHeightDown());
         g2.fillRect(allPipes[2].getCurrentX(), HEIGHT-allPipes[2].getHeightUp(), allPipes[2].getWidth(), allPipes[2].getHeightUp());
+        g.setColor(Color.BLACK);
+        g.drawString("Score: " + newPlayer.getScore(), 10,30);
+        g.fillOval(newBird.getX(), newBird.getY(), Bird.getThickness(), Bird.getThickness());
     }
 
+    /**
+     * updates the window
+     * @param jframe    frame to update
+     */
     public void updateWindow(JFrame jframe) {
         jframe.getContentPane().validate();
         jframe.repaint();
     }
 
+    /**
+     * setup for Pipes, gravity, bird, timeSinceLastJump
+     */
     public void setup() {
         allPipes = new Pipe[3];
         gravity = 10;
@@ -55,6 +65,10 @@ public class FlappyBird extends JPanel {
         }
     }
 
+    /**
+     * checks whether the bird went out of window, or hit a pipe
+     * @return true if there is a collision, false if there is no collision
+     */
     private Boolean collision() {
         Boolean collisionOn = true;
         if (collisionOn) {
@@ -80,6 +94,12 @@ public class FlappyBird extends JPanel {
         return false;
     }
 
+    /**
+     * the actual gameloop
+     * implements a keylistener -> you can jump up by pressing any button
+     * @param frame     window frame
+     * @return true if gameover
+     */
     public Boolean gameloop(JFrame frame) {
         int delayTime = 30;
 
@@ -147,6 +167,11 @@ public class FlappyBird extends JPanel {
         return true;
     }
 
+    /**
+     * main method
+     * sets the JFrame, player, bird, initialises with the setup and starts the gameloop
+     * @param args
+     */
     public static void main(String [] args) {
         FlappyBird flappyBird = new FlappyBird();
         flappyBird.currentKey = (char) 0;
