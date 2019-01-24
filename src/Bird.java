@@ -12,15 +12,31 @@ public class Bird {
         speed = 0;
     }
 
-    public int getX() {return x;}
-    public int getY() {return y;}
+    public int getX() {
+        return x;
+    }
 
-    public void setX(int newX) {x = newX;}
-    public void setY(int newY) {y = newY;}
-    public void setSpeed(int speed) {this.speed = speed;}
+    public int getY() {
+        return y;
+    }
 
-    public void jump() {y = y - 33;}
+    public void setX(int newX) {
+        x = newX;
+    }
 
-    public static int getThickness() {return thickness;}
-    public int getSpeed() {return speed;}
+    public void setY(int newY) {
+        y = newY;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public static int getThickness() {
+        return thickness;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
 }
