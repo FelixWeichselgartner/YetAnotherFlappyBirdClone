@@ -4,7 +4,7 @@
  */
 public class Bird {
     private int x, y, speed;
-    private static int thickness = 20;
+    private final static int thickness = 45;
 
     public void Bird(int startX, int startY) {
         x = startX;

@@ -7,8 +7,8 @@ import java.util.Random;
 public class Pipe {
     private int heightUp, heightDown;
     private int currentX;
-    private int width;
-    private int space;
+    private final int width;
+    private final int space;
 
     public Pipe() {
         width = 60;
