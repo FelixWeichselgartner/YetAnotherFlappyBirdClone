@@ -1,6 +1,6 @@
 # Flappy Bird clone in Java
 
-A simple Flappy Bird clone in Java with no sprites
+A simple Flappy Bird clone in Java
 
 # What I Learned
 
