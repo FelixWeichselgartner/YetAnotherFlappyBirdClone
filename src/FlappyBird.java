@@ -1,10 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.Graphics;
 
 /**
@@ -22,7 +22,7 @@ public class FlappyBird extends JPanel {
     /**
      * player with score and name.
      */
-    private Player newPlayer = new Player();
+    private Player newPlayer;
     /**
      * the bird to jump through pipes.
      */
@@ -64,13 +64,52 @@ public class FlappyBird extends JPanel {
      */
     private final int EASIERFACTOR = 20;
 
+    /**
+     * true if gameover, false if still running.
+     */
+    private boolean gameOver;
 
-    private FlappyBird() {
-        allPipes = new Pipe[AMOUNTPIPES];
+    /**
+     * game only start if jump key was pressed once.
+     */
+    private boolean firstPressed;
+
+    /**
+     * true if player clicked on restart, false if not.
+     */
+    private boolean clickedRestart;
+
+    /**
+     * creates the bird.
+     */
+    private void createBird() {
         newBird = new Bird();
         newBird.setX(50);
         newBird.setY(HEIGHT / 2);
-        timeSinceLastJump = 0;
+    }
+
+    /**
+     * creates the pipes.
+     */
+    private void createPipes() {
+        allPipes = new Pipe[AMOUNTPIPES];
+        for (int i = 0; i < AMOUNTPIPES; i++) {
+            allPipes[i] = new Pipe();
+            allPipes[i].generatePipe(i);
+            //System.out.println("Pipe Number " + i);
+            //allPipes[i].printPipeToConsole();
+        }
+    }
+
+    private void createPlayer() {
+        newPlayer = new Player();
+        newPlayer.setName("Felix");
+    }
+
+    /**
+     * reads in the images.
+     */
+    private void readImg() {
         try {
             pipeUpImg = ImageIO.read(new File("img/PipeUp.png"));
             pipeDownImg = ImageIO.read(new File("img/PipeDown.png"));
@@ -79,14 +118,39 @@ public class FlappyBird extends JPanel {
         } catch (IOException e) {
 
         }
+    }
 
+    /**
+     * initialises the constants.
+     */
+    private void initConstants() {
+        this.clickedRestart = false;
+        this.firstPressed = false;
+        this.gameOver = false;
+        timeSinceLastJump = 0;
+    }
 
-        for (int i = 0; i < AMOUNTPIPES; i++) {
-            allPipes[i] = new Pipe();
-            allPipes[i].generatePipe(i);
-            //System.out.println("Pipe Number " + i);
-            //allPipes[i].printPipeToConsole();
-        }
+    /**
+     * calls functions:
+     *  - constants.
+     *  - read img.
+     *  - create bird.
+     *  - create pipe.
+     */
+    private void setup(){
+        initConstants();
+        readImg();
+        createBird();
+        createPipes();
+        createPlayer();
+    }
+
+    /**
+     * constructor:
+     *  - calls setup.
+     */
+    private FlappyBird() {
+        setup();
     }
 
     /**
@@ -110,9 +174,26 @@ public class FlappyBird extends JPanel {
         g2.drawImage(pipeUpImg, allPipes[2].getCurrentX(), HEIGHT - allPipes[2].getHeightUp(),
                 allPipes[2].getWidth(), allPipes[2].getHeightUp(), this);
         g.setColor(Color.BLACK);
-        g.drawString("Score: " + newPlayer.getScore(), 10, 30);
+
+        String text = "Score: " + newPlayer.getScore();
+        Font font = new Font("Arial", Font.PLAIN, 28);
+        FontMetrics metrics = g.getFontMetrics(font);
+        int scoreX = (WIDTH - metrics.stringWidth(text)) / 2;
+        g.setFont(font);
+        g.drawString(text, scoreX, 30);
+
         g2.drawImage(birdImg, newBird.getX(), newBird.getY(),
                 Bird.getThickness() * BIRDIMGWIDTH / BIRDIMGHEIGHT, Bird.getThickness(), this);
+
+        if (this.gameOver) {
+            System.out.println("GameOver!");
+            font = new Font("Arial", Font.PLAIN, 50);
+            metrics = g.getFontMetrics(font);
+            String lost = "GameOver!";
+            int gameOverX = (WIDTH - metrics.stringWidth(lost)) / 2;
+            g.setFont(font);
+            g.drawString(lost, gameOverX, HEIGHT / 2);
+        }
     }
 
     /**
@@ -132,22 +213,54 @@ public class FlappyBird extends JPanel {
      */
     private boolean collision() {
         boolean collisionOn = true;
-        if (collisionOn) {
-            for (int i = 0; i < AMOUNTPIPES; i++) {
-                if (newBird.getX() > allPipes[i].getCurrentX() - Bird.getThickness() + EASIERFACTOR && newBird.getX() < allPipes[i].getCurrentX() + allPipes[i].getWidth() / 2 + Bird.getThickness() - EASIERFACTOR) {
-                    if (newBird.getY() > allPipes[i].getHeightDown() && newBird.getY() < HEIGHT - allPipes[i].getHeightUp() - Bird.getThickness()) {
-                    } else {
-                        return true;
-                    }
+        for (int i = 0; i < AMOUNTPIPES; i++) {
+            if (newBird.getX() > allPipes[i].getCurrentX() - Bird.getThickness() + EASIERFACTOR && newBird.getX() < allPipes[i].getCurrentX() + allPipes[i].getWidth() / 2 + Bird.getThickness() - EASIERFACTOR) {
+                if (newBird.getY() > allPipes[i].getHeightDown() && newBird.getY() < HEIGHT - allPipes[i].getHeightUp() - Bird.getThickness()) {
+                } else {
+                    return true;
                 }
             }
         }
 
-        //checks if too hight or too low
+        //checks if too high or too low
         if (newBird.getY() <= 0 || newBird.getY() >= HEIGHT) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * function to restart the game.
+     * @param frame
+     */
+    private boolean restart(JFrame frame) {
+        System.out.println("button now here");
+
+        //problem: key listener in main does not work anymore after action listener for button
+        /*
+        Button restart = new Button("Restart?");
+        restart.setVisible(true);
+        int width = WIDTH/10, height = HEIGHT/20;
+        restart.setBounds(WIDTH/2 - width/2, HEIGHT/2 - height/2 , width, height);
+
+        restart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("clicked!");
+                clickedRestart = true;
+                restart.setVisible(false);
+            }
+        });
+
+        frame.getContentPane().add(restart);
+
+        while (!clickedRestart) {
+            System.out.println("loop");
+        }
+        */
+
+        setup();
+        return clickedRestart;
     }
 
     /**
@@ -157,12 +270,14 @@ public class FlappyBird extends JPanel {
      * @param frame window frame
      * @return true if gameover
      */
-    private boolean gameloop(JFrame frame) {
+    private void gameloop(JFrame frame) {
         final int delayTime = 30;
+
 
         //add key listener
         frame.addKeyListener(new KeyListener() {
             public void keyTyped(KeyEvent ke) {
+                firstPressed = true;
                 newBird.setSpeed(-15);
             }
 
@@ -175,48 +290,65 @@ public class FlappyBird extends JPanel {
         });
 
         while (true) {
-            //update the current window
+            while (firstPressed) {
+                //update the current window
+                updateWindow(frame);
+
+                //check for collision
+                if (collision()) {
+                    this.gameOver = true;
+                    updateWindow(frame);
+                    restart(frame);
+                    break;
+                }
+
+                //delay the program a few seconds so its not to fast
+                try {
+                    Thread.sleep(delayTime);
+                    timeSinceLastJump = timeSinceLastJump + delayTime;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //set the birds new y position according to the current speed
+                newBird.setSpeed(newBird.getSpeed() + 1);
+                newBird.setY(newBird.getY() + newBird.getSpeed() * 3 / 4);
+
+                //shift everything a few pixels to the left;
+                int pixel = 1;
+                for (int i = 0; i < AMOUNTPIPES; i++) {
+                    allPipes[i].setCurrentX(allPipes[i].getCurrentX() - pixel);
+                }
+
+                //increase the score of the player
+                for (int i = 0; i < AMOUNTPIPES; i++) {
+                    if (newBird.getX() == allPipes[i].getCurrentX()) {
+                        newPlayer.setScore(newPlayer.getScore() + 1);
+                    }
+                }
+
+                //shift the pipes to generate a new one
+                for (int i = 0; i < AMOUNTPIPES; i++) {
+                    if (allPipes[i].getCurrentX() == -allPipes[i].getWidth()) {
+                        allPipes[i].generatePipe(2);
+                    }
+                }
+            }
             updateWindow(frame);
-
-            //check for collision
-            if (collision()) {
-                break;
-            }
-
-            //delay the program a few seconds so its not to fast
-            try {
-                Thread.sleep(delayTime);
-                timeSinceLastJump = timeSinceLastJump + delayTime;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            //set the birds new y position according to the current speed
-            newBird.setSpeed(newBird.getSpeed() + 1);
-            newBird.setY(newBird.getY() + newBird.getSpeed() * 3 / 4);
-
-            //shift everything a few pixels to the left;
-            int pixel = 1;
-            for (int i = 0; i < AMOUNTPIPES; i++) {
-                allPipes[i].setCurrentX(allPipes[i].getCurrentX() - pixel);
-            }
-
-            //increase the score of the player
-            for (int i = 0; i < AMOUNTPIPES; i++) {
-                if (newBird.getX() == allPipes[i].getCurrentX()) {
-                    newPlayer.setScore(newPlayer.getScore() + 1);
-                }
-            }
-
-            //shift the pipes to generate a new one
-            for (int i = 0; i < AMOUNTPIPES; i++) {
-                if (allPipes[i].getCurrentX() == -allPipes[i].getWidth()) {
-                    allPipes[i].generatePipe(2);
-                }
-            }
         }
-        updateWindow(frame);
-        return true;
+    }
+
+    /**
+     * starts the gameloop.
+     * @param frame
+     */
+    private void startGame(JFrame frame) {
+        gameloop(frame);
+        if (gameOver) {
+            restart(frame);
+            System.out.println("You lost!");
+            System.out.println(newPlayer.getName() + " got " + newPlayer.getScore() + " points!");
+        }
     }
 
     /**
@@ -227,18 +359,16 @@ public class FlappyBird extends JPanel {
      * @param args
      */
     public static void main(String[] args) {
-        FlappyBird flappyBird = new FlappyBird();
         JFrame frame = new JFrame("Flappy Bird");
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(flappyBird);
         frame.setVisible(true);
-        flappyBird.newPlayer.setName("Felix");
-        boolean gameOver = flappyBird.gameloop(frame);
-        if (gameOver == true) {
-            System.out.println("You lost!");
-            System.out.println(flappyBird.newPlayer.getName() + " got " + flappyBird.newPlayer.getScore() + " points!");
-        }
+
+        FlappyBird flappyBird = new FlappyBird();
+        frame.getContentPane().add(flappyBird);
+
+        flappyBird.startGame(frame);
+        System.out.println("exit");
     }
 }
